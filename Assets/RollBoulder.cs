@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class RollBoulder : MonoBehaviour
 {
+
+    public static RollBoulder instance;
+
     public int framewhererotate;
     public int rotationperframe;
     public Transform Boulder;
@@ -21,7 +24,15 @@ public class RollBoulder : MonoBehaviour
 
     public float pointsnecessaryforheart;
     public double favors;
-    
+
+
+    private void Awake()
+    {
+        if(instance == null)
+        {
+            instance = this;
+        }
+    }
 
     private void Start()
     {
