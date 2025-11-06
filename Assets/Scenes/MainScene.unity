@@ -1736,8 +1736,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 312, y: 199}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: 334.72653, y: 199}
+  m_SizeDelta: {x: 114.5469, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2044745374
 MonoBehaviour:
@@ -1865,22 +1865,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 447860540}
     m_Modifications:
-    - target: {fileID: 502110045030834616, guid: b7890ec6e553d634ab2df64cddf61073, type: 3}
-      propertyPath: allnodes.Array.data[1].parentIDs.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 502110045030834616, guid: b7890ec6e553d634ab2df64cddf61073, type: 3}
-      propertyPath: allnodes.Array.data[2].parentIDs.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 502110045030834616, guid: b7890ec6e553d634ab2df64cddf61073, type: 3}
-      propertyPath: 'allnodes.Array.data[1].parentIDs.Array.data[0]'
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3375251456773751909, guid: b7890ec6e553d634ab2df64cddf61073, type: 3}
-      propertyPath: speedperframe
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4153350647182160758, guid: b7890ec6e553d634ab2df64cddf61073, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1965,8 +1949,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: TalentTree
       objectReference: {fileID: 0}
-    - target: {fileID: 5349749672259027765, guid: b7890ec6e553d634ab2df64cddf61073, type: 3}
-      propertyPath: m_IsActive
+    - target: {fileID: 8590315620529404547, guid: b7890ec6e553d634ab2df64cddf61073, type: 3}
+      propertyPath: NodeId
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

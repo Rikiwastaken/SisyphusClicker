@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class TalentTreeScript : MonoBehaviour
 {
@@ -17,13 +20,12 @@ public class TalentTreeScript : MonoBehaviour
         public Sprite picture;
         public GameObject GameObject;
         public bool unlocked;
+        public string type; // AC (autoclicker), MD (More Distance), Col (COLYSEUM), MF (More Favors), FD (Favor Delays), AF (Auto Favors), RE (Random Events)
     }
 
-    public List<TreeNode> allnodes;
+    public bool triggervisualchange;
 
-    // --- Add these ---
-    private bool isDragging = false;
-    private Vector3 offset;
+    public List<TreeNode> allnodes;
 
     private void Awake()
     {
@@ -31,43 +33,90 @@ public class TalentTreeScript : MonoBehaviour
         {
             instance = this;
         }
+        InvertIndexes();
     }
 
-    void Update()
+    public void Update()
     {
-        HandleDrag();
-    }
-
-    void HandleDrag()
-    {
-        if (Input.GetMouseButtonDown(0))
+        if(triggervisualchange)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out RaycastHit hit))
+            triggervisualchange = false;
+            for(int i = 0; i < transform.childCount; i++)
             {
-                isDragging = true;
-                Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(
-                    new Vector3(Input.mousePosition.x, Input.mousePosition.y, hit.distance)
-                );
-                offset = transform.position - mouseWorld;
+                if(transform.GetChild(i).GetComponent<TreeNodeScript>())
+                {
+                    transform.GetChild(i).GetComponent<TreeNodeScript>().OnEnable();
+                }
+            }
+        }
+    }
+
+    private void InvertIndexes()
+    {
+        List<Transform> children = new List<Transform>();
+        for(int i = 0; i<transform.childCount; i++)
+        {
+            children.Add(transform.GetChild(i));
+        }
+
+        for(int i = 0;i<children.Count; i++)
+        {
+            children[children.Count-1-i].SetSiblingIndex(i);
+        }
+
+    }
+
+    public void ApplyNodeChangesAndSave()
+    {
+#if UNITY_EDITOR
+
+        foreach(TreeNode node in allnodes)
+        {
+            switch(node.type)
+            {
+                case "AC":
+                    node.basecost = 10;
+                    node.NodeName = "Auto Clicker";
+                    break;
+                case "MD":
+                    node.basecost = 15;
+                    node.NodeName = "More Distance";
+                    break;
+                case "Col":
+                    node.basecost = 20;
+                    node.NodeName = "Colyseum";
+                    break;
+                case "MF":
+                    node.basecost = 25;
+                    node.NodeName = "More Favors";
+                    break;
+                case "FD":
+                    node.basecost = 30;
+                    node.NodeName = "Favor Delays";
+                    break;
+                case "AF":
+                    node.basecost = 35;
+                    node.NodeName = "Auto Favors";
+                    break;
+                case "RE":
+                    node.basecost = 40;
+                    node.NodeName = "Random Events";
+                    break;
             }
         }
 
-        if (Input.GetMouseButtonUp(0))
-        {
-            isDragging = false;
-        }
 
-        if (isDragging)
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            float dist = Vector3.Distance(transform.position, Camera.main.transform.position);
-            Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(
-                new Vector3(Input.mousePosition.x, Input.mousePosition.y, dist)
-            );
+        // Mark this object as dirty so Unity knows it changed
+        EditorUtility.SetDirty(this);
 
-            transform.position = mouseWorld + offset;
-        }
+        // Mark the scene dirty so it gets saved
+        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
+
+
+        Debug.Log("TalentTreeScript: All node changes have been saved to the scene.");
+#else
+        Debug.LogWarning("ApplyNodeChangesAndSave can only be used in the Unity Editor.");
+#endif
     }
+
 }

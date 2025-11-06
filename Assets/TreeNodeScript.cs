@@ -8,18 +8,6 @@ using static TalentTreeScript;
 public class TreeNodeScript : MonoBehaviour
 {
 
-    //public class TreeNode
-    //{
-    //    public int id;
-    //    public string name;
-    //    public List<int> parentIDs;
-    //    public int tier;
-    //    public int basecost;
-    //    public Sprite picture;
-    //    public GameObject GameObject;
-    //    public bool unlocked;
-    //}
-
     public int NodeId;
 
     private TreeNode ScriptNode;
@@ -36,7 +24,13 @@ public class TreeNodeScript : MonoBehaviour
 
     public Sprite LineSprite;
 
+    public Sprite LockedSprite;
+
     private bool createlines = true;
+
+    public Image NodeImage;
+
+    public Image BackgroundImage;
 
     private void Start()
     {
@@ -60,7 +54,8 @@ public class TreeNodeScript : MonoBehaviour
 
         CalculateNecessaryFavors();
         CalculateCost();
-        buttonNameTMP.text = ScriptNode.NodeName + " " + IntToRoman(ScriptNode.tier);
+        buttonNameTMP.text = ScriptNode.NodeName + " " + IntToRoman(ScriptNode.tier+1);
+        OnEnable();
     }
 
 
@@ -73,9 +68,39 @@ public class TreeNodeScript : MonoBehaviour
         }
     }
 
+    public void OnEnable()
+    {
+        
+        if(ScriptNode != null)
+        {
+            bool parentsunlocked = true;
+            foreach (TreeNode node in parents)
+            {
+                if (!node.unlocked)
+                {
+                    parentsunlocked = false;
+                }
+            }
+            if (parentsunlocked)
+            {
+                NodeImage.sprite = ScriptNode.picture;
+            }
+            else
+            {
+                NodeImage.sprite = LockedSprite;
+            }
+            if(ScriptNode.unlocked)
+            {
+                BackgroundImage.color = Color.green;
+            }
+        }
+        
+
+    }
+
     private void CalculateNecessaryFavors()
     {
-        necessary_favors = ScriptNode.basecost * 10 ^ (ScriptNode.tier * 3);
+        necessary_favors = (double)(ScriptNode.basecost * Mathf.Pow(10,ScriptNode.tier * 3));
     }
 
     private void CalculateCost()
@@ -105,6 +130,8 @@ public class TreeNodeScript : MonoBehaviour
         return true;
     }
 
+    
+
     private void CreateLines()
     {
         foreach (TreeNode parent in parents)
@@ -126,19 +153,6 @@ public class TreeNodeScript : MonoBehaviour
             square.GetComponent<RectTransform>().sizeDelta = new Vector2(1, 20);
             square.transform.SetSiblingIndex(0);
 
-            ChangeSiblingIndex(parent.GameObject.transform, transform);
-
-        }
-    }
-
-    private void ChangeSiblingIndex(Transform Parenttransform, Transform childTransform)
-    {
-        int parentindex = Parenttransform.GetSiblingIndex();
-        int childindex = childTransform.GetSiblingIndex();
-        if (parentindex<childindex)
-        {
-            Parenttransform.SetSiblingIndex(childindex);
-            childTransform.SetSiblingIndex(parentindex);
         }
     }
 
@@ -176,6 +190,7 @@ public class TreeNodeScript : MonoBehaviour
         {
             RollBoulder.instance.favors -= necessary_favors;
             ScriptNode.unlocked = true;
+            TalentTreeScript.instance.triggervisualchange = true;
         }
     }
 }

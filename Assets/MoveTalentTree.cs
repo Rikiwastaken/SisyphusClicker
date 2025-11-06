@@ -33,7 +33,7 @@ public class UIDragMove : MonoBehaviour
             transform.position -= new Vector3(0f, speedperframe, 0f) / Time.deltaTime;
         }
 
-        if(transform.position.y < Initialpos.y)
+        if(transform.position.y > Initialpos.y)
         {
             transform.position = new Vector3(transform.position.x, Initialpos.y, transform.position.z);
         }
