@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using static TalentTreeScript;
 
 public class RollBoulder : MonoBehaviour
 {
@@ -25,6 +26,8 @@ public class RollBoulder : MonoBehaviour
     public float pointsnecessaryforheart;
     public double favors;
 
+    private int currentFavorAddTier;
+    private int currentFavorDelayTier;
 
     private void Awake()
     {
@@ -63,7 +66,7 @@ public class RollBoulder : MonoBehaviour
     public void ManageDistanceText()
     {
 
-        string distance_text = "Favors : ";
+        string distance_text = "Distance Climbed : ";
 
         distance_text += CalculateNumberString(meterswalked);
         if (distanceTMP != null)
@@ -111,15 +114,37 @@ public class RollBoulder : MonoBehaviour
         meterswalked++;
 
 
-        if(FavorPoints > pointsnecessaryforheart)
+        if(FavorPoints > pointsnecessaryforheart * Mathf.Pow(0.5f, currentFavorDelayTier))
         { 
             FavorPoints -= pointsnecessaryforheart;
             GameObject newheart =Instantiate(HeartPrefab);
             newheart.transform.position = heartspawnpoint + new Vector2(UnityEngine.Random.Range(-1f, 1f),0f);
             newheart.transform.parent = HeartContainer;
-            favors++;
+            favors+=1 + currentFavorAddTier;
             ManageFavorsText();
         }
 
     }
+
+    public void UpdateFavorTiers()
+    {
+        int favorAddTier = 0;
+        int favorDelayTier = 0;
+        foreach (TreeNode node in TalentTreeScript.instance.allnodes)
+        {
+            if(node.type=="MF" && node.unlocked)
+            {
+                favorAddTier++;
+            }
+            if (node.type == "FD" && node.unlocked)
+            {
+                favorDelayTier++;
+            }
+        }
+
+        currentFavorAddTier = favorAddTier;
+        currentFavorDelayTier = favorDelayTier;
+
+    }
+
 }

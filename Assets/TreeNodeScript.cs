@@ -191,6 +191,8 @@ public class TreeNodeScript : MonoBehaviour
             RollBoulder.instance.favors -= necessary_favors;
             ScriptNode.unlocked = true;
             TalentTreeScript.instance.triggervisualchange = true;
+            AutoClickerScript.instance.UpdateACTier();
+            RollBoulder.instance.UpdateFavorTiers();
         }
     }
 }

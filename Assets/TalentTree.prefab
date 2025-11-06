@@ -75,6 +75,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   triggervisualchange: 0
   allnodes:
+  - id: 0
+    NodeName: 
+    parentIDs: 
+    tier: 0
+    basecost: 0
+    picture: {fileID: 0}
+    GameObject: {fileID: 0}
+    unlocked: 0
+    type: 
   - id: 1
     NodeName: Auto Clicker
     parentIDs: 
