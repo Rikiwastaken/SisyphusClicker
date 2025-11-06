@@ -62,46 +62,46 @@ public class RollBoulder : MonoBehaviour
 
     public void ManageDistanceText()
     {
-        double meters = meterswalked; 
-        string[] suffixes = { "m", "km", "Mm", "Gm", "Tm", "Pm", "Em", "Zm", "Ym", "Rm", "Qm" }; 
 
-        int idx = 0;
-        while (meters >= 1000.0 && idx < suffixes.Length - 1)
-        {
-            meters /= 1000.0;
-            idx++;
-        }
+        string distance_text = "Favors : ";
 
-        string distance_text = "Distance walked : ";
-        if (idx == 0)
-            distance_text += ((double)meters).ToString() + " " + suffixes[idx];
-        else
-            distance_text += meters.ToString("0.###") + " " + suffixes[idx];
-
+        distance_text += CalculateNumberString(meterswalked);
         if (distanceTMP != null)
-            distanceTMP.text = distance_text;
+        {
+            distanceTMP.text = distance_text+"m";
+        }
     }
 
     public void ManageFavorsText()
     {
-        double favorsearned = favors;
+        string favors_text = "Favors : ";
+
+        favors_text += CalculateNumberString(favors);
+        if (favorsTMP != null)
+        {
+            favorsTMP.text = favors_text;
+        }
+    }
+
+    public string CalculateNumberString(double number)
+    {
+        double numbertomodify = number;
         string[] suffixes = { "", "k", "M", "G", "T", "P", "E", "Z", "Y", "R", "Q" };
 
         int idx = 0;
-        while (favorsearned >= 1000.0 && idx < suffixes.Length - 1)
+        while (numbertomodify >= 1000.0 && idx < suffixes.Length - 1)
         {
-            favorsearned /= 1000.0;
+            numbertomodify /= 1000.0;
             idx++;
         }
 
-        string favors_text = "Favors : ";
+        string numberstr = "";
         if (idx == 0)
-            favors_text += ((double)favorsearned).ToString() + " " + suffixes[idx];
+            numberstr += ((double)numbertomodify).ToString() + " " + suffixes[idx];
         else
-            favors_text += favorsearned.ToString("0.###") + " " + suffixes[idx];
+            numberstr += numbertomodify.ToString("0.###") + " " + suffixes[idx];
 
-        if (favorsTMP != null)
-            favorsTMP.text = favors_text;
+        return numberstr;
     }
 
     public void rotateBoulder()

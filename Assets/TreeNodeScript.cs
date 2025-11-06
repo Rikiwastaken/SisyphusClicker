@@ -24,7 +24,9 @@ public class TreeNodeScript : MonoBehaviour
 
     private TreeNode ScriptNode;
 
-    private TextMeshProUGUI buttonNameTMP;
+    public TextMeshProUGUI buttonNameTMP;
+
+    public TextMeshProUGUI buttonCostTMP;
 
     private List<TreeNode> parents = new List<TreeNode>();
 
@@ -34,10 +36,10 @@ public class TreeNodeScript : MonoBehaviour
 
     public Sprite LineSprite;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private bool createlines = true;
+
     private void Start()
     {
-        buttonNameTMP = GetComponentInChildren<TextMeshProUGUI>();
 
         foreach(TreeNode node in TalentTreeScript.instance.allnodes)
         {
@@ -57,13 +59,29 @@ public class TreeNodeScript : MonoBehaviour
         }
 
         CalculateNecessaryFavors();
-        CreateLines();
+        CalculateCost();
         buttonNameTMP.text = ScriptNode.NodeName + " " + IntToRoman(ScriptNode.tier);
+    }
+
+
+    private void Update()
+    {
+        if(createlines)
+        {
+            CreateLines();
+            createlines = false;
+        }
     }
 
     private void CalculateNecessaryFavors()
     {
         necessary_favors = ScriptNode.basecost * 10 ^ (ScriptNode.tier * 3);
+    }
+
+    private void CalculateCost()
+    {
+        string coststr = RollBoulder.instance.CalculateNumberString(necessary_favors) + "";
+        buttonCostTMP.text = coststr;
     }
 
     private bool CheckIfTalentCanBeUnlocked()
@@ -104,7 +122,23 @@ public class TreeNodeScript : MonoBehaviour
 
             square.transform.rotation = Quaternion.Euler(0, 0, angle);
             square.transform.localScale = new Vector3(length, thickness, 1);
+            square.transform.SetParent(transform);
+            square.GetComponent<RectTransform>().sizeDelta = new Vector2(1, 20);
+            square.transform.SetSiblingIndex(0);
 
+            ChangeSiblingIndex(parent.GameObject.transform, transform);
+
+        }
+    }
+
+    private void ChangeSiblingIndex(Transform Parenttransform, Transform childTransform)
+    {
+        int parentindex = Parenttransform.GetSiblingIndex();
+        int childindex = childTransform.GetSiblingIndex();
+        if (parentindex<childindex)
+        {
+            Parenttransform.SetSiblingIndex(childindex);
+            childTransform.SetSiblingIndex(parentindex);
         }
     }
 
