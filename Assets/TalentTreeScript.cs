@@ -16,24 +16,25 @@ public class TalentTreeScript : MonoBehaviour
         public string NodeName;
         public List<int> parentIDs;
         public int tier;
-        public int basecost;
+        public double basecost;
         public Sprite picture;
         public GameObject GameObject;
         public bool unlocked;
-        public string type; // AC (autoclicker), MD (More Distance), Col (COLYSEUM), MF (More Favors), FD (Favor Delays), AF (Auto Favors), RE (Random Events)
+        public string type; // AC (autoclicker), MD (More Distance), ACol (AutoCOLYSEUM), Col (COLYSEUM), MF (More Favors), FD (Favor Delays), AF (Auto Favors), RE (Random Events)
     }
 
     public bool triggervisualchange;
 
     public List<TreeNode> allnodes;
 
-    private void Awake()
+    public void Awake()
     {
         if (instance == null)
         {
             instance = this;
         }
         InvertIndexes();
+        transform.parent.gameObject.SetActive(false);
     }
 
     public void Update()
@@ -79,7 +80,7 @@ public class TalentTreeScript : MonoBehaviour
                     node.NodeName = "Auto Clicker";
                     break;
                 case "MD":
-                    node.basecost = 15;
+                    node.basecost = 1;
                     node.NodeName = "More Distance";
                     break;
                 case "Col":
@@ -87,21 +88,27 @@ public class TalentTreeScript : MonoBehaviour
                     node.NodeName = "Colyseum";
                     break;
                 case "MF":
-                    node.basecost = 25;
+                    node.basecost = 20;
                     node.NodeName = "More Favors";
                     break;
                 case "FD":
-                    node.basecost = 30;
+                    node.basecost = 20;
                     node.NodeName = "Favor Delays";
                     break;
                 case "AF":
-                    node.basecost = 35;
+                    node.basecost = 30000000;
                     node.NodeName = "Auto Favors";
                     break;
                 case "RE":
-                    node.basecost = 40;
+                    node.basecost = 40000;
                     node.NodeName = "Random Events";
                     break;
+                case "ACol":
+                    node.basecost = 50000000000;
+                    node.NodeName = "Auto Colyseum";
+                    break;
+
+                    
             }
         }
 

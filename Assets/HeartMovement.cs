@@ -35,6 +35,17 @@ public class HeartMovement : MonoBehaviour
 
     }
 
+    public void UpdateColor(int tier)
+    {
+        if(SR==null)
+        {
+            SR = GetComponent<SpriteRenderer>();
+        }
+        float multiplier = Mathf.Min((float)(5f -tier) / 5f,1f);
+        Color color = new Color(1f,  multiplier,  multiplier);
+        SR.color = color;
+    }
+
 
     private void ManageFade()
     {

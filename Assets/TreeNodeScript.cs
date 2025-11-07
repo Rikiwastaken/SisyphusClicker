@@ -100,7 +100,21 @@ public class TreeNodeScript : MonoBehaviour
 
     private void CalculateNecessaryFavors()
     {
-        necessary_favors = (double)(ScriptNode.basecost * Mathf.Pow(10,ScriptNode.tier * 3));
+
+        if (ScriptNode.tier==0)
+        {
+            necessary_favors = (double)(ScriptNode.basecost);
+        }
+        else if(ScriptNode.tier==1)
+        {
+            necessary_favors = (double)(ScriptNode.basecost*10f);
+        }
+        else 
+        {
+            necessary_favors = (double)(ScriptNode.basecost * Mathf.Pow(10, ScriptNode.tier * 2));
+        }
+
+
     }
 
     private void CalculateCost()
@@ -120,13 +134,10 @@ public class TreeNodeScript : MonoBehaviour
             }
         }
 
-        if (RollBoulder.instance.favors < necessary_favors)
+        if (RollBoulder.instance.currentSave.favors < necessary_favors)
         {
             return false;
         }
-
-
-
         return true;
     }
 
@@ -188,11 +199,11 @@ public class TreeNodeScript : MonoBehaviour
     {
         if (!ScriptNode.unlocked && CheckIfTalentCanBeUnlocked())
         {
-            RollBoulder.instance.favors -= necessary_favors;
+            RollBoulder.instance.currentSave.favors -= necessary_favors;
             ScriptNode.unlocked = true;
             TalentTreeScript.instance.triggervisualchange = true;
             AutoClickerScript.instance.UpdateACTier();
-            RollBoulder.instance.UpdateFavorTiers();
+            RollBoulder.instance.UpdateUpgradeTiers();
         }
     }
 }

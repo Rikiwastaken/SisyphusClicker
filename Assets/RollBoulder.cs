@@ -1,6 +1,9 @@
+using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using static TalentTreeScript;
+using static TreeNodeScript;
 
 public class RollBoulder : MonoBehaviour
 {
@@ -12,26 +15,39 @@ public class RollBoulder : MonoBehaviour
     public Transform Boulder;
     public Transform HeartContainer;
 
-    public double meterswalked;
+    private string savePath;
 
     public Vector3 targetrotation;
     public TextMeshProUGUI distanceTMP;
     public TextMeshProUGUI favorsTMP;
 
-    public float FavorPoints;
+
 
     public GameObject HeartPrefab;
     public Vector2 heartspawnpoint;
 
     public float pointsnecessaryforheart;
-    public double favors;
 
-    private int currentFavorAddTier;
-    private int currentFavorDelayTier;
+    public TalentTreeScript treescript;
+
+    [Serializable]
+
+    public class SaveClass
+    {
+        public double meterswalked;
+        public int currentFavorAddTier;
+        public int currentFavorDelayTier;
+        public int currentDistanceBonusTier;
+        public double favors;
+        public double FavorPoints;
+        public List<bool> unlockedTree;
+    }
+
+    public SaveClass currentSave;
 
     private void Awake()
     {
-        if(instance == null)
+        if (instance == null)
         {
             instance = this;
         }
@@ -39,7 +55,10 @@ public class RollBoulder : MonoBehaviour
 
     private void Start()
     {
+        savePath = System.IO.Path.Combine(Application.persistentDataPath, "savefile.json");
+        LoadSave();
         targetrotation = Boulder.transform.localRotation.eulerAngles;
+        ManageFavorsText();
     }
 
     void Update()
@@ -48,10 +67,10 @@ public class RollBoulder : MonoBehaviour
         {
             framewhererotate--;
 
-            targetrotation += new Vector3(0, 0, rotationperframe);
+            targetrotation += new Vector3(0, 0, rotationperframe) * (currentSave.currentDistanceBonusTier * 3f + 1f);
 
-            
-            
+
+
         }
 
         Boulder.transform.localRotation = Quaternion.Lerp(
@@ -66,12 +85,12 @@ public class RollBoulder : MonoBehaviour
     public void ManageDistanceText()
     {
 
-        string distance_text = "Distance Climbed : ";
+        string distance_text = "Distance : ";
 
-        distance_text += CalculateNumberString(meterswalked);
+        distance_text += CalculateNumberString(currentSave.meterswalked);
         if (distanceTMP != null)
         {
-            distanceTMP.text = distance_text+"m";
+            distanceTMP.text = distance_text + "m";
         }
     }
 
@@ -79,7 +98,7 @@ public class RollBoulder : MonoBehaviour
     {
         string favors_text = "Favors : ";
 
-        favors_text += CalculateNumberString(favors);
+        favors_text += CalculateNumberString(currentSave.favors);
         if (favorsTMP != null)
         {
             favorsTMP.text = favors_text;
@@ -109,30 +128,130 @@ public class RollBoulder : MonoBehaviour
 
     public void rotateBoulder()
     {
-        framewhererotate++;
-        FavorPoints++;
-        meterswalked++;
 
-
-        if(FavorPoints > pointsnecessaryforheart * Mathf.Pow(0.5f, currentFavorDelayTier))
-        { 
-            FavorPoints -= pointsnecessaryforheart;
-            GameObject newheart =Instantiate(HeartPrefab);
-            newheart.transform.position = heartspawnpoint + new Vector2(UnityEngine.Random.Range(-1f, 1f),0f);
-            newheart.transform.parent = HeartContainer;
-            favors+=1 + currentFavorAddTier;
-            ManageFavorsText();
+        int rotationbonus = 1;
+        if (currentSave.currentDistanceBonusTier > 0)
+        {
+            rotationbonus += (int)Mathf.Pow(10, currentSave.currentDistanceBonusTier * 2);
         }
 
+        framewhererotate += 1;
+        currentSave.FavorPoints++;
+        currentSave.meterswalked += rotationbonus;
+
+
+        if (currentSave.FavorPoints > pointsnecessaryforheart * Mathf.Pow(0.33f, currentSave.currentFavorDelayTier))
+        {
+            currentSave.FavorPoints -= pointsnecessaryforheart;
+            GameObject newheart = Instantiate(HeartPrefab);
+            newheart.GetComponent<HeartMovement>().UpdateColor(currentSave.currentFavorAddTier);
+            newheart.transform.position = heartspawnpoint + new Vector2(UnityEngine.Random.Range(-1f, 1f), 0f);
+            newheart.transform.parent = HeartContainer;
+            currentSave.favors += 1 + Mathf.Pow(10, currentSave.currentFavorAddTier + 1);
+            ManageFavorsText();
+        }
+        Save();
     }
 
-    public void UpdateFavorTiers()
+    private void LoadSave()
+    {
+        try
+        {
+            if (System.IO.File.Exists(savePath))
+            {
+                string json = System.IO.File.ReadAllText(savePath);
+                currentSave = JsonUtility.FromJson<SaveClass>(json);
+                Debug.Log("Save loaded from: " + savePath);
+            }
+            else
+            {
+                currentSave = new SaveClass()
+                {
+                    meterswalked = 0,
+                    currentFavorAddTier = 0,
+                    currentFavorDelayTier = 0,
+                    currentDistanceBonusTier = 0,
+                    favors = 0,
+                    FavorPoints = 0,
+                    unlockedTree = new List<bool>()
+                };
+                foreach (TreeNode node in TalentTreeScript.instance.allnodes)
+                {
+                    currentSave.unlockedTree.Add(false);
+                }
+
+                Save();
+                Debug.Log("No save found. New save created.");
+            }
+
+            for (int i = 0; i < Mathf.Min(TalentTreeScript.instance.allnodes.Count, currentSave.unlockedTree.Count); i++)
+            {
+                TalentTreeScript.instance.allnodes[i].unlocked = currentSave.unlockedTree[i];
+            }
+
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Load failed: " + e.Message);
+
+            // fallback
+            if (currentSave == null)
+            {
+                currentSave = new SaveClass()
+                {
+                    meterswalked = 0,
+                    currentFavorAddTier = 0,
+                    currentFavorDelayTier = 0,
+                    currentDistanceBonusTier = 0,
+                    favors = 0,
+                    FavorPoints = 0,
+                    unlockedTree = new List<bool>()
+                };
+                foreach (TreeNode node in TalentTreeScript.instance.allnodes)
+                {
+                    currentSave.unlockedTree.Add(false);
+                }
+                for (int i = 0; i < TalentTreeScript.instance.allnodes.Count; i++)
+                {
+                    TalentTreeScript.instance.allnodes[i].unlocked = currentSave.unlockedTree[i];
+                }
+            }
+
+        }
+        AutoClickerScript.instance.UpdateACTier();
+        UpdateUpgradeTiers();
+    }
+
+
+    public void Save()
+    {
+        try
+        {
+
+            List<bool> list = new List<bool>();
+            foreach (TreeNode node in TalentTreeScript.instance.allnodes)
+            {
+                list.Add(node.unlocked);
+            }
+            currentSave.unlockedTree = list;
+            string json = JsonUtility.ToJson(currentSave, true);
+            System.IO.File.WriteAllText(savePath, json);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Save failed: " + e.Message);
+        }
+    }
+
+
+    public void UpdateUpgradeTiers()
     {
         int favorAddTier = 0;
         int favorDelayTier = 0;
+        int DistanceTier = 0;
         foreach (TreeNode node in TalentTreeScript.instance.allnodes)
         {
-            if(node.type=="MF" && node.unlocked)
+            if (node.type == "MF" && node.unlocked)
             {
                 favorAddTier++;
             }
@@ -140,11 +259,17 @@ public class RollBoulder : MonoBehaviour
             {
                 favorDelayTier++;
             }
+            if (node.type == "MD" && node.unlocked)
+            {
+                DistanceTier++;
+            }
         }
 
-        currentFavorAddTier = favorAddTier;
-        currentFavorDelayTier = favorDelayTier;
+        favorAddTier *= DistanceTier;
 
+        currentSave.currentFavorAddTier = favorAddTier;
+        currentSave.currentFavorDelayTier = favorDelayTier;
+        currentSave.currentDistanceBonusTier = DistanceTier;
+        Save();
     }
-
 }

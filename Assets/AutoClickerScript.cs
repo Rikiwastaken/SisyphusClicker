@@ -51,7 +51,8 @@ public class AutoClickerScript : MonoBehaviour
     {
         for (int i = 0;i<AutoclickerTierUnlocks.Count;i++)
         {
-            if(TalentTreeScript.instance.allnodes[AutoclickerTierUnlocks[i]].unlocked)
+
+            if(TalentTreeScript.instance != null && TalentTreeScript.instance.allnodes!=null && AutoclickerTierUnlocks!=null && AutoclickerTierUnlocks.Count>i &&  TalentTreeScript.instance.allnodes.Count> AutoclickerTierUnlocks[i] && TalentTreeScript.instance.allnodes[AutoclickerTierUnlocks[i]].unlocked)
             {
                 currenttier =TalentTreeScript.instance.allnodes[AutoclickerTierUnlocks[i]].tier;
             }
