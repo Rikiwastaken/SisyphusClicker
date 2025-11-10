@@ -80,7 +80,7 @@ public class TalentTreeScript : MonoBehaviour
                     node.NodeName = "Auto Clicker";
                     break;
                 case "MD":
-                    node.basecost = 1;
+                    node.basecost = 15;
                     node.NodeName = "More Distance";
                     break;
                 case "Col":
@@ -88,11 +88,11 @@ public class TalentTreeScript : MonoBehaviour
                     node.NodeName = "Colyseum";
                     break;
                 case "MF":
-                    node.basecost = 20;
+                    node.basecost = 25;
                     node.NodeName = "More Favors";
                     break;
                 case "FD":
-                    node.basecost = 20;
+                    node.basecost = 30;
                     node.NodeName = "Favor Delays";
                     break;
                 case "AF":

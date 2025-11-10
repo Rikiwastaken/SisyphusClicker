@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static TalentTreeScript;
 using static TreeNodeScript;
 
@@ -30,6 +31,12 @@ public class RollBoulder : MonoBehaviour
 
     public TalentTreeScript treescript;
 
+    public Animator animator;
+
+    private int framewherewalks;
+
+    private PathMovementScript pathMovement;
+
     [Serializable]
 
     public class SaveClass
@@ -56,6 +63,7 @@ public class RollBoulder : MonoBehaviour
     private void Start()
     {
         savePath = System.IO.Path.Combine(Application.persistentDataPath, "savefile.json");
+        pathMovement = FindAnyObjectByType<PathMovementScript>();
         LoadSave();
         targetrotation = Boulder.transform.localRotation.eulerAngles;
         ManageFavorsText();
@@ -65,19 +73,42 @@ public class RollBoulder : MonoBehaviour
     {
         if (framewhererotate > 0)
         {
+
+            
+
             framewhererotate--;
 
-            targetrotation += new Vector3(0, 0, rotationperframe) * (currentSave.currentDistanceBonusTier * 3f + 1f);
+            targetrotation += new Vector3(0, 0, rotationperframe);
 
-
+            framewherewalks = (int)(2f/Time.deltaTime);
 
         }
+        
 
-        Boulder.transform.localRotation = Quaternion.Lerp(
-            Boulder.transform.localRotation,
-            Quaternion.Euler(targetrotation),
-            Time.deltaTime
-        );
+            Boulder.transform.localRotation = Quaternion.Lerp(
+                Boulder.transform.localRotation,
+                Quaternion.Euler(targetrotation),
+                Time.deltaTime * Mathf.Pow(2, currentSave.currentDistanceBonusTier)
+            );
+
+
+        if(framewherewalks>0)
+        {
+            pathMovement.movepath = true;
+            framewherewalks--;
+            if (!animator.GetBool("Walking"))
+            {
+                animator.SetBool("Walking", true);
+            }
+        }
+        else
+        {
+            pathMovement.movepath = false;
+            if (animator.GetBool("Walking"))
+            {
+                animator.SetBool("Walking", false);
+            }
+        }
 
         ManageDistanceText();
     }
@@ -132,7 +163,7 @@ public class RollBoulder : MonoBehaviour
         int rotationbonus = 1;
         if (currentSave.currentDistanceBonusTier > 0)
         {
-            rotationbonus += (int)Mathf.Pow(10, currentSave.currentDistanceBonusTier * 2);
+            rotationbonus += (int)Mathf.Pow(10, currentSave.currentDistanceBonusTier * 1.5f);
         }
 
         framewhererotate += 1;
@@ -140,14 +171,14 @@ public class RollBoulder : MonoBehaviour
         currentSave.meterswalked += rotationbonus;
 
 
-        if (currentSave.FavorPoints > pointsnecessaryforheart * Mathf.Pow(0.33f, currentSave.currentFavorDelayTier))
+        if (currentSave.FavorPoints > pointsnecessaryforheart * Mathf.Pow(0.5f, currentSave.currentFavorDelayTier))
         {
             currentSave.FavorPoints -= pointsnecessaryforheart;
             GameObject newheart = Instantiate(HeartPrefab);
             newheart.GetComponent<HeartMovement>().UpdateColor(currentSave.currentFavorAddTier);
             newheart.transform.position = heartspawnpoint + new Vector2(UnityEngine.Random.Range(-1f, 1f), 0f);
             newheart.transform.parent = HeartContainer;
-            currentSave.favors += 1 + Mathf.Pow(10, currentSave.currentFavorAddTier + 1);
+            currentSave.favors += Mathf.Pow(10, currentSave.currentFavorAddTier)/2f;
             ManageFavorsText();
         }
         Save();
@@ -243,6 +274,25 @@ public class RollBoulder : MonoBehaviour
         }
     }
 
+    public void ResetSave()
+    {
+        currentSave = new SaveClass()
+        {
+            meterswalked = 0,
+            currentFavorAddTier = 0,
+            currentFavorDelayTier = 0,
+            currentDistanceBonusTier = 0,
+            favors = 0,
+            FavorPoints = 0,
+            unlockedTree = new List<bool>()
+        };
+        foreach (TreeNode node in TalentTreeScript.instance.allnodes)
+        {
+            currentSave.unlockedTree.Add(false);
+        }
+        Save();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
 
     public void UpdateUpgradeTiers()
     {

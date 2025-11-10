@@ -73,14 +73,21 @@ public class TreeNodeScript : MonoBehaviour
         
         if(ScriptNode != null)
         {
-            bool parentsunlocked = true;
-            foreach (TreeNode node in parents)
+            bool parentsunlocked = false;
+            if(parents.Count == 0)
             {
-                if (!node.unlocked)
-                {
-                    parentsunlocked = false;
-                }
+                parentsunlocked = true;
             }
+            else
+            {
+                foreach (TreeNode node in parents)
+                {
+                    if (node.unlocked)
+                    {
+                        parentsunlocked = true;
+                    }
+                }
+            }  
             if (parentsunlocked)
             {
                 NodeImage.sprite = ScriptNode.picture;
@@ -125,20 +132,28 @@ public class TreeNodeScript : MonoBehaviour
 
     private bool CheckIfTalentCanBeUnlocked()
     {
-
-        foreach (TreeNode node in parents)
+        bool unlockable = false;
+        if(parents.Count==0)
         {
-            if (!node.unlocked)
+            unlockable = true;
+        }
+        else
+        {
+            foreach (TreeNode node in parents)
             {
-                return false;
+                if (node.unlocked)
+                {
+                    unlockable = true;
+                }
             }
         }
+            
 
         if (RollBoulder.instance.currentSave.favors < necessary_favors)
         {
-            return false;
+            unlockable = false;
         }
-        return true;
+        return unlockable;
     }
 
     
@@ -199,11 +214,13 @@ public class TreeNodeScript : MonoBehaviour
     {
         if (!ScriptNode.unlocked && CheckIfTalentCanBeUnlocked())
         {
-            RollBoulder.instance.currentSave.favors -= necessary_favors;
+            RollBoulder rb = RollBoulder.instance;
+            rb.currentSave.favors = rb.currentSave.favors - necessary_favors;
             ScriptNode.unlocked = true;
             TalentTreeScript.instance.triggervisualchange = true;
             AutoClickerScript.instance.UpdateACTier();
-            RollBoulder.instance.UpdateUpgradeTiers();
+            rb.UpdateUpgradeTiers();
+            rb.ManageFavorsText();
         }
     }
 }
