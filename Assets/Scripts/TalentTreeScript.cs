@@ -9,6 +9,8 @@ public class TalentTreeScript : MonoBehaviour
 {
     public static TalentTreeScript instance;
 
+
+
     [Serializable]
     public class TreeNode
     {
@@ -27,6 +29,15 @@ public class TalentTreeScript : MonoBehaviour
 
     public List<TreeNode> allnodes;
 
+    public Sprite AutoClickerSprite;
+    public Sprite MoreDistanceSprite;
+    public Sprite ColyseumSprite;
+    public Sprite AutoColyseumSprite;
+    public Sprite MoreFavorsSprite;
+    public Sprite FavorDelaysSprite;
+    public Sprite AutoFavorsSprite;
+    public Sprite RandomEventsSprite;
+
     public void Awake()
     {
         if (instance == null)
@@ -39,12 +50,12 @@ public class TalentTreeScript : MonoBehaviour
 
     public void Update()
     {
-        if(triggervisualchange)
+        if (triggervisualchange)
         {
             triggervisualchange = false;
-            for(int i = 0; i < transform.childCount; i++)
+            for (int i = 0; i < transform.childCount; i++)
             {
-                if(transform.GetChild(i).GetComponent<TreeNodeScript>())
+                if (transform.GetChild(i).GetComponent<TreeNodeScript>())
                 {
                     transform.GetChild(i).GetComponent<TreeNodeScript>().OnEnable();
                 }
@@ -55,14 +66,14 @@ public class TalentTreeScript : MonoBehaviour
     private void InvertIndexes()
     {
         List<Transform> children = new List<Transform>();
-        for(int i = 0; i<transform.childCount; i++)
+        for (int i = 0; i < transform.childCount; i++)
         {
             children.Add(transform.GetChild(i));
         }
 
-        for(int i = 0;i<children.Count; i++)
+        for (int i = 0; i < children.Count; i++)
         {
-            children[children.Count-1-i].SetSiblingIndex(i);
+            children[children.Count - 1 - i].SetSiblingIndex(i);
         }
 
     }
@@ -76,34 +87,42 @@ public class TalentTreeScript : MonoBehaviour
             switch(node.type)
             {
                 case "AC":
+                    node.picture = AutoClickerSprite;
                     node.basecost = 10;
                     node.NodeName = "Auto Clicker";
                     break;
                 case "MD":
+                    node.picture = MoreDistanceSprite;
                     node.basecost = 15;
                     node.NodeName = "More Distance";
                     break;
                 case "Col":
+                    node.picture = ColyseumSprite;
                     node.basecost = 20;
                     node.NodeName = "Colyseum";
                     break;
                 case "MF":
+                    node.picture = MoreFavorsSprite;
                     node.basecost = 25;
                     node.NodeName = "More Favors";
                     break;
                 case "FD":
+                    node.picture = FavorDelaysSprite;
                     node.basecost = 30;
                     node.NodeName = "Favor Delays";
                     break;
                 case "AF":
+                    node.picture = AutoFavorsSprite;
                     node.basecost = 30000000;
                     node.NodeName = "Auto Favors";
                     break;
                 case "RE":
+                    node.picture = RandomEventsSprite;
                     node.basecost = 40000;
                     node.NodeName = "Random Events";
                     break;
                 case "ACol":
+                    node.picture = AutoColyseumSprite;
                     node.basecost = 50000000000;
                     node.NodeName = "Auto Colyseum";
                     break;

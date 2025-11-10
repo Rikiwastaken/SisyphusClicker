@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class PathMovementScript : MonoBehaviour
@@ -12,20 +13,27 @@ public class PathMovementScript : MonoBehaviour
 
     private Transform mainpath;
 
+    private RollBoulder RollBoulder;
+
+    private TextMeshProUGUI TitleTMP;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         mainpath = path0;
+        RollBoulder = FindAnyObjectByType<RollBoulder>();
+        TitleTMP = GetComponentInChildren<TextMeshProUGUI>();
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        
         if(movepath)
         {
-
-            path0.transform.localPosition -= new Vector3(movespeed*Time.deltaTime, 0, 0);
-            path1.transform.localPosition -= new Vector3(movespeed * Time.deltaTime, 0, 0);
+            float newmovespeed = movespeed * Mathf.Pow(2, Mathf.Min(RollBoulder.currentSave.currentDistanceBonusTier,8f));
+            path0.transform.localPosition -= new Vector3(newmovespeed * Time.deltaTime, 0, 0);
+            path1.transform.localPosition -= new Vector3(newmovespeed * Time.deltaTime, 0, 0);
 
             if (mainpath.transform.localPosition.x <= -30)
             {
@@ -40,6 +48,12 @@ public class PathMovementScript : MonoBehaviour
                     mainpath = path0;
                 }
             }
+            if(TitleTMP.transform.localPosition.x>-1000)
+            {
+                TitleTMP.transform.localPosition -= new Vector3(1f, 0.3f, 0f);
+            }
+            
+
         }
     }
 }

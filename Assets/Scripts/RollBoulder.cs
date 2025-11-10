@@ -37,6 +37,8 @@ public class RollBoulder : MonoBehaviour
 
     private PathMovementScript pathMovement;
 
+    public bool reachedheaven;
+
     [Serializable]
 
     public class SaveClass
@@ -71,6 +73,12 @@ public class RollBoulder : MonoBehaviour
 
     void Update()
     {
+
+        if (currentSave.meterswalked >Mathf.Pow(10,20))
+        {
+            reachedheaven = true;
+        }
+
         if (framewhererotate > 0)
         {
 
@@ -160,17 +168,25 @@ public class RollBoulder : MonoBehaviour
     public void rotateBoulder()
     {
 
-        int rotationbonus = 1;
+        double rotationbonus = 1;
         if (currentSave.currentDistanceBonusTier > 0)
         {
-            rotationbonus += (int)Mathf.Pow(10, currentSave.currentDistanceBonusTier * 1.5f);
+            rotationbonus += (double)Mathf.Pow(10, currentSave.currentDistanceBonusTier * 1.5f);
         }
 
-        framewhererotate += 1;
-        currentSave.FavorPoints++;
+        framewhererotate = (int)(0.5f/Time.fixedDeltaTime);
+        
         currentSave.meterswalked += rotationbonus;
 
+        GainFavor();
 
+
+        Save();
+    }
+
+    public void GainFavor()
+    {
+        currentSave.FavorPoints++;
         if (currentSave.FavorPoints > pointsnecessaryforheart * Mathf.Pow(0.5f, currentSave.currentFavorDelayTier))
         {
             currentSave.FavorPoints -= pointsnecessaryforheart;
@@ -178,10 +194,9 @@ public class RollBoulder : MonoBehaviour
             newheart.GetComponent<HeartMovement>().UpdateColor(currentSave.currentFavorAddTier);
             newheart.transform.position = heartspawnpoint + new Vector2(UnityEngine.Random.Range(-1f, 1f), 0f);
             newheart.transform.parent = HeartContainer;
-            currentSave.favors += Mathf.Pow(10, currentSave.currentFavorAddTier)/2f;
+            currentSave.favors += Mathf.Max(Mathf.Pow(5, currentSave.currentFavorAddTier) / 2f, 1f);
             ManageFavorsText();
         }
-        Save();
     }
 
     private void LoadSave()
