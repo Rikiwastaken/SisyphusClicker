@@ -38,6 +38,7 @@ public class TalentTreeScript : MonoBehaviour
     public Sprite AutoFavorsSprite;
     public Sprite RandomEventsSprite;
 
+    public GameObject ColiseumButton;
     public void Awake()
     {
         if (instance == null)
@@ -50,6 +51,7 @@ public class TalentTreeScript : MonoBehaviour
 
     public void Update()
     {
+        
         if (triggervisualchange)
         {
             triggervisualchange = false;
@@ -63,6 +65,16 @@ public class TalentTreeScript : MonoBehaviour
         }
     }
 
+    public void CheckIfColiseumUnlocked()
+    {
+        if (!ColiseumButton.activeSelf)
+        {
+            if (allnodes[2].unlocked)
+            {
+                ColiseumButton.SetActive(true);
+            }
+        }
+    }
     private void InvertIndexes()
     {
         List<Transform> children = new List<Transform>();
@@ -99,7 +111,7 @@ public class TalentTreeScript : MonoBehaviour
                 case "Col":
                     node.picture = ColyseumSprite;
                     node.basecost = 20;
-                    node.NodeName = "Colyseum";
+                    node.NodeName = "Coliseum";
                     break;
                 case "MF":
                     node.picture = MoreFavorsSprite;
@@ -124,7 +136,7 @@ public class TalentTreeScript : MonoBehaviour
                 case "ACol":
                     node.picture = AutoColyseumSprite;
                     node.basecost = 50000000000;
-                    node.NodeName = "Auto Colyseum";
+                    node.NodeName = "Auto Coliseum";
                     break;
 
                     

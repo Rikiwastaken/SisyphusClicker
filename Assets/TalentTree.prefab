@@ -122,7 +122,7 @@ MonoBehaviour:
     unlocked: 0
     type: AC
   - id: 2
-    NodeName: Colyseum
+    NodeName: Coliseum
     parentIDs: 01000000
     tier: 0
     basecost: 20
@@ -329,7 +329,7 @@ MonoBehaviour:
     unlocked: 0
     type: AF
   - id: 25
-    NodeName: Colyseum
+    NodeName: Coliseum
     parentIDs: 02000000
     tier: 1
     basecost: 20
@@ -338,7 +338,7 @@ MonoBehaviour:
     unlocked: 0
     type: Col
   - id: 26
-    NodeName: Colyseum
+    NodeName: Coliseum
     parentIDs: 19000000
     tier: 2
     basecost: 20
@@ -347,7 +347,7 @@ MonoBehaviour:
     unlocked: 0
     type: Col
   - id: 27
-    NodeName: Colyseum
+    NodeName: Coliseum
     parentIDs: 1a000000
     tier: 3
     basecost: 20
@@ -356,7 +356,7 @@ MonoBehaviour:
     unlocked: 0
     type: Col
   - id: 28
-    NodeName: Auto Colyseum
+    NodeName: Auto Coliseum
     parentIDs: 1b00000013000000
     tier: 0
     basecost: 50000000000
@@ -428,7 +428,7 @@ MonoBehaviour:
     unlocked: 0
     type: FD
   - id: 36
-    NodeName: Auto Colyseum
+    NodeName: Auto Coliseum
     parentIDs: 1c000000
     tier: 1
     basecost: 50000000000
@@ -455,7 +455,7 @@ MonoBehaviour:
     unlocked: 0
     type: AC
   - id: 39
-    NodeName: Auto Colyseum
+    NodeName: Auto Coliseum
     parentIDs: 24000000
     tier: 3
     basecost: 50000000000
@@ -500,7 +500,7 @@ MonoBehaviour:
     unlocked: 0
     type: MD
   - id: 44
-    NodeName: Auto Colyseum
+    NodeName: Auto Coliseum
     parentIDs: 2b000000
     tier: 4
     basecost: 50000000000
@@ -536,7 +536,7 @@ MonoBehaviour:
     unlocked: 0
     type: AF
   - id: 48
-    NodeName: Auto Colyseum
+    NodeName: Auto Coliseum
     parentIDs: 2c000000
     tier: 5
     basecost: 50000000000
@@ -588,6 +588,7 @@ MonoBehaviour:
   FavorDelaysSprite: {fileID: 21300000, guid: 9425472a60a3b01448bc9f1c1ca1e1c1, type: 3}
   AutoFavorsSprite: {fileID: 21300000, guid: a4a01f9371df92e439fa3cee8903e51f, type: 3}
   RandomEventsSprite: {fileID: 21300000, guid: af251149cd3258446b05c55242bb0e61, type: 3}
+  ColiseumButton: {fileID: 0}
 --- !u!114 &3375251456773751909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -601,6 +602,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speedperframe: 1
+  finalpos: -1150
 --- !u!1001 &176682064485436656
 PrefabInstance:
   m_ObjectHideFlags: 0

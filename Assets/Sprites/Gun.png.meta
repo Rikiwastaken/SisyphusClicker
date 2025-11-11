@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: b55eee43464840d4dbf5b5118cb8b16c
+guid: 9ac8105f670e8c942b9c10df55ab4ce6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1460132880433070394
-    second: SysiphusHandStanding_0
-  - first:
-      213: -1197748322244448932
-    second: SysiphusHandStanding_1
+      213: 6879118450950661895
+    second: Gun_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -103,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: SysiphusHandStanding_0
+      name: Gun_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 20
-        width: 20
-        height: 20
+        y: 3
+        width: 23
+        height: 10
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -118,30 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6ce3be0a1e09cbbe0800000000000000
-      internalID: -1460132880433070394
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SysiphusHandStanding_1
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 20
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c5dac423f3eb06fe0800000000000000
-      internalID: -1197748322244448932
+      spriteID: 707efb4b8c9877f50800000000000000
+      internalID: 6879118450950661895
       vertices: []
       indices: 
       edges: []
@@ -150,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 361fe84984e07f34a914dede1865b823
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -160,8 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      SysiphusHandStanding_0: -1460132880433070394
-      SysiphusHandStanding_1: -1197748322244448932
+      Gun_0: 6879118450950661895
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

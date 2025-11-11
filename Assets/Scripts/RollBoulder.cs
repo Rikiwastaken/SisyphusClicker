@@ -73,7 +73,7 @@ public class RollBoulder : MonoBehaviour
 
     void Update()
     {
-
+        treescript.CheckIfColiseumUnlocked();
         if (currentSave.meterswalked >Mathf.Pow(10,20))
         {
             reachedheaven = true;
