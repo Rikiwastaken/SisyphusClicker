@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 using UnityEngine.UI;
 using static TalentTreeScript;
@@ -214,6 +213,7 @@ public class TreeNodeScript : MonoBehaviour
     {
         if (!ScriptNode.unlocked && CheckIfTalentCanBeUnlocked())
         {
+            GetComponent<AudioSource>().Play();
             RollBoulder rb = RollBoulder.instance;
             rb.currentSave.favors = rb.currentSave.favors - necessary_favors;
             ScriptNode.unlocked = true;

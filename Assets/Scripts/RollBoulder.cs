@@ -4,7 +4,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static TalentTreeScript;
-using static TreeNodeScript;
 
 public class RollBoulder : MonoBehaviour
 {
@@ -15,8 +14,6 @@ public class RollBoulder : MonoBehaviour
     public int rotationperframe;
     public Transform Boulder;
     public Transform HeartContainer;
-
-    private string savePath;
 
     public Vector3 targetrotation;
     public TextMeshProUGUI distanceTMP;
@@ -38,6 +35,8 @@ public class RollBoulder : MonoBehaviour
     private PathMovementScript pathMovement;
 
     public bool reachedheaven;
+
+    public ColyseumMovements FinalBattleMovement;
 
     [Serializable]
 
@@ -81,7 +80,6 @@ public class RollBoulder : MonoBehaviour
 
     private void Start()
     {
-        savePath = System.IO.Path.Combine(Application.persistentDataPath, "savefile.json");
         pathMovement = FindAnyObjectByType<PathMovementScript>();
         LoadSave();
         targetrotation = Boulder.transform.localRotation.eulerAngles;
@@ -93,18 +91,23 @@ public class RollBoulder : MonoBehaviour
     void Update()
     {
         treescript.CheckIfColiseumUnlocked();
-        if (currentSave.meterswalked >Mathf.Pow(10,19))
+        if (currentSave.meterswalked >(double)6f*Mathf.Pow(10,18))
         {
             if(!BaseLayer.activeSelf)
             {
                 BaseLayer.SetActive(true);
             }
-            if(ColiseumLayer.activeSelf)
+            if (TalentTreeScript.instance.transform.parent.gameObject.activeSelf)
+            {
+                TalentTreeScript.instance.transform.parent.gameObject.SetActive(false);
+            }
+            if (ColiseumLayer.activeSelf)
             {
                 ColiseumLayer.SetActive(false);
             }
             if (BaseHUD.activeSelf)
             {
+                MusicPlayer.instance.PlayBossMusic();
                 BaseHUD.SetActive(false);
             }
             if (!FinaleImage.gameObject.activeSelf)
@@ -139,8 +142,7 @@ public class RollBoulder : MonoBehaviour
             framewherewalks = (int)(2f/Time.deltaTime);
 
         }
-        
-        Debug.Log(targetrotation);
+       
             Boulder.transform.localRotation = Quaternion.Lerp(
                 Boulder.transform.localRotation,
                 Quaternion.Euler(targetrotation),
@@ -179,6 +181,7 @@ public class RollBoulder : MonoBehaviour
         currentSave.favors = 0;
         currentSave.meterswalked = 0;
         currentSave.AlreadyFacedZeus = true;
+        FinalBattleMovement.Setup();
     }
 
     public void Submit()
@@ -191,6 +194,7 @@ public class RollBoulder : MonoBehaviour
         currentSave.favors = 0;
         currentSave.meterswalked = 0;
         currentSave.AlreadyFacedZeus = true;
+        MusicPlayer.instance.PlayMapMusic();
     }
 
     public void ManageDistanceText()
@@ -246,9 +250,6 @@ public class RollBoulder : MonoBehaviour
         currentSave.meterswalked += rotationbonus;
 
         GainFavor();
-
-
-        Save();
     }
 
     public void GainFavor()
@@ -268,93 +269,28 @@ public class RollBoulder : MonoBehaviour
 
     private void LoadSave()
     {
-        try
+        currentSave = new SaveClass()
         {
-            if (System.IO.File.Exists(savePath))
-            {
-                string json = System.IO.File.ReadAllText(savePath);
-                currentSave = JsonUtility.FromJson<SaveClass>(json);
-                Debug.Log("Save loaded from: " + savePath);
-            }
-            else
-            {
-                currentSave = new SaveClass()
-                {
-                    meterswalked = 0,
-                    currentFavorAddTier = 0,
-                    currentFavorDelayTier = 0,
-                    currentDistanceBonusTier = 0,
-                    favors = 0,
-                    FavorPoints = 0,
-                    unlockedTree = new List<bool>()
-                };
-                foreach (TreeNode node in TalentTreeScript.instance.allnodes)
-                {
-                    currentSave.unlockedTree.Add(false);
-                }
-
-                Save();
-                Debug.Log("No save found. New save created.");
-            }
-
-            for (int i = 0; i < Mathf.Min(TalentTreeScript.instance.allnodes.Count, currentSave.unlockedTree.Count); i++)
-            {
-                TalentTreeScript.instance.allnodes[i].unlocked = currentSave.unlockedTree[i];
-            }
-
-        }
-        catch (Exception e)
+            meterswalked = 0,
+            currentFavorAddTier = 0,
+            currentFavorDelayTier = 0,
+            currentDistanceBonusTier = 0,
+            favors = 0,
+            FavorPoints = 0,
+            unlockedTree = new List<bool>()
+        };
+        foreach (TreeNode node in TalentTreeScript.instance.allnodes)
         {
-            Debug.LogError("Load failed: " + e.Message);
-
-            // fallback
-            if (currentSave == null)
-            {
-                currentSave = new SaveClass()
-                {
-                    meterswalked = 0,
-                    currentFavorAddTier = 0,
-                    currentFavorDelayTier = 0,
-                    currentDistanceBonusTier = 0,
-                    favors = 0,
-                    FavorPoints = 0,
-                    unlockedTree = new List<bool>()
-                };
-                foreach (TreeNode node in TalentTreeScript.instance.allnodes)
-                {
-                    currentSave.unlockedTree.Add(false);
-                }
-                for (int i = 0; i < TalentTreeScript.instance.allnodes.Count; i++)
-                {
-                    TalentTreeScript.instance.allnodes[i].unlocked = currentSave.unlockedTree[i];
-                }
-            }
-
+            currentSave.unlockedTree.Add(false);
         }
+        for (int i = 0; i < Mathf.Min(TalentTreeScript.instance.allnodes.Count, currentSave.unlockedTree.Count); i++)
+        {
+            TalentTreeScript.instance.allnodes[i].unlocked = currentSave.unlockedTree[i];
+        }
+        
         AutoClickerScript.instance.UpdateAutoclickers();
         UpdateGun();
         UpdateUpgradeTiers();
-    }
-
-
-    public void Save()
-    {
-        try
-        {
-
-            List<bool> list = new List<bool>();
-            foreach (TreeNode node in TalentTreeScript.instance.allnodes)
-            {
-                list.Add(node.unlocked);
-            }
-            currentSave.unlockedTree = list;
-            string json = JsonUtility.ToJson(currentSave, true);
-            System.IO.File.WriteAllText(savePath, json);
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("Save failed: " + e.Message);
-        }
     }
 
     public void ResetSave()
@@ -373,7 +309,6 @@ public class RollBoulder : MonoBehaviour
         {
             currentSave.unlockedTree.Add(false);
         }
-        Save();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -403,7 +338,6 @@ public class RollBoulder : MonoBehaviour
         currentSave.currentFavorAddTier = favorAddTier;
         currentSave.currentFavorDelayTier = favorDelayTier;
         currentSave.currentDistanceBonusTier = DistanceTier;
-        Save();
     }
 
 

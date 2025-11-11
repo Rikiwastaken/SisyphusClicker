@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using TMPro;
-using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -90,8 +88,14 @@ public class ColyseumMovements : MonoBehaviour
 
     private int endcounter;
 
-    private void OnEnable()
+    public void Setup()
     {
+        matchover = false;
+        foreach (BulletScript bullet in FindObjectsByType<BulletScript>(FindObjectsSortMode.None))
+        {
+            Destroy(bullet.gameObject);
+        }
+
         transform.position = new Vector2(-enemystartpos.x,enemystartpos.y);
         matchovercounter = 0;
 
@@ -120,6 +124,7 @@ public class ColyseumMovements : MonoBehaviour
             }
             foreach (ColyseumEnemyMovements enemy in allenemies)
             {
+                enemy.GetComponent<BoxCollider2D>().isTrigger = false;
                 enemy.HP = 100;
                 enemy.currentclip = enemy.maxbulletperclip;
                 enemy.transform.position = enemystartpos + new Vector2(UnityEngine.Random.Range(-1f, 2f), UnityEngine.Random.Range(0, 2f));
@@ -346,6 +351,7 @@ public class ColyseumMovements : MonoBehaviour
 
     private void ManageTrueEnd()
     {
+
         if(EndBlackScreen.color.a<1f)
         {
             Color oldcolor = EndBlackScreen.color;
@@ -365,8 +371,17 @@ public class ColyseumMovements : MonoBehaviour
                 {
                     transform.parent.gameObject.SetActive(false);
                     RollBoulder.instance.BaseLayer.SetActive(true);
+                    Color oldcolorA = EndBlackScreen.color;
+                    oldcolorA.a =0f;
+                    EndBlackScreen.color = oldcolorA;
+                    Color oldcolorB = EndText.color;
+                    oldcolorB.a = 0f;
+                    EndText.color = oldcolorB;
+                    HP = 1;
                 }
+                
             }
+
                 
         }
         else if (TrueEnd.color.a < 1f)
@@ -401,7 +416,7 @@ public class ColyseumMovements : MonoBehaviour
                 reloadcounter = (int)(reloadtime/(RollBoulder.instance.numberofBetterGun/2f+1f) / Time.fixedDeltaTime);
                 lastmaxcounterreloadcounter = reloadcounter;
             }
-
+            MusicPlayer.instance.PlayGunSound();
             GameObject newbullet = Instantiate(BulletPrefab);
             newbullet.transform.SetParent(GunTransform.GetChild(0));
             newbullet.transform.localPosition = BulletSpawnOffset;
@@ -423,11 +438,11 @@ public class ColyseumMovements : MonoBehaviour
                 TextMeshProUGUI buttontmp = MatchEndButton.GetComponentInChildren<TextMeshProUGUI>();
                 if (Victory)
                 {
-                    buttontmp.text = "Victory !\nFavor multiplied by " + currentColyseumtier * 2;
+                    buttontmp.text = "Victory !\nFavor multiplied by " + (currentColyseumtier+1) * 2;
                 }
                 else
                 {
-                    buttontmp.text = "Defeat !\nFavor divided by " + currentColyseumtier * 2;
+                    buttontmp.text = "Defeat !\nFavor divided by " + (currentColyseumtier + 1) * 2;
                 }
             }
             else if (matchovercounter < 2.5f / Time.fixedDeltaTime)
@@ -441,6 +456,14 @@ public class ColyseumMovements : MonoBehaviour
         }
         else
         {
+            if(HP>0)
+            {
+                MusicPlayer.instance.PlayEndMusic();
+            }
+            else
+            {
+                MusicPlayer.instance.PlayMapMusic();
+            }
             ManageTrueEnd();
         }
     }

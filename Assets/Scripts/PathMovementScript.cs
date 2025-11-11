@@ -15,14 +15,13 @@ public class PathMovementScript : MonoBehaviour
 
     private RollBoulder RollBoulder;
 
-    private TextMeshProUGUI TitleTMP;
+    public TextMeshProUGUI TitleTMP;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         mainpath = path0;
         RollBoulder = FindAnyObjectByType<RollBoulder>();
-        TitleTMP = GetComponentInChildren<TextMeshProUGUI>();
     }
 
     // Update is called once per frame
@@ -41,6 +40,10 @@ public class PathMovementScript : MonoBehaviour
                 {
                     path0.transform.localPosition+= new Vector3(60f, 0, 0);
                     mainpath = path1;
+                    if(path0.childCount>0)
+                    {
+                        Destroy(path0.GetChild(0).gameObject);
+                    }
                 }
                 else
                 {
@@ -48,9 +51,13 @@ public class PathMovementScript : MonoBehaviour
                     mainpath = path0;
                 }
             }
-            if(TitleTMP.transform.localPosition.x>-1000)
+            if(TitleTMP.transform.localPosition.x>-3000)
             {
                 TitleTMP.transform.localPosition -= new Vector3(1f, 0.3f, 0f);
+            }
+            else
+            {
+                Destroy(TitleTMP.gameObject);
             }
             
 

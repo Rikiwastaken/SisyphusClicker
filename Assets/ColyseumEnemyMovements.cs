@@ -99,7 +99,15 @@ public class ColyseumEnemyMovements : MonoBehaviour
 
     void FixedUpdate()
     {
-       
+       if(HP<=0)
+        {
+            if(!GetComponent<BoxCollider2D>().isTrigger)
+            {
+                MusicPlayer.instance.PlayDeathSound();
+                GetComponent<BoxCollider2D>().isTrigger = true;
+            }
+            
+        }
         float maxhp = 100f;
         if(isZeus)
         {
@@ -287,7 +295,7 @@ public class ColyseumEnemyMovements : MonoBehaviour
                 reloadcounter = (int)(reloadtime / Time.fixedDeltaTime);
                 lastmaxcounterreloadcounter = reloadcounter;
             }
-
+            MusicPlayer.instance.PlayGunSound();
             GameObject newbullet = Instantiate(BulletPrefab);
             newbullet.transform.SetParent(GunTransform.GetChild(0));
             newbullet.transform.localPosition = BulletSpawnOffset;
