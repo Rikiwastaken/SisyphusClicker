@@ -118,7 +118,7 @@ public class TreeNodeScript : MonoBehaviour
         }
         else 
         {
-            necessary_favors = (double)(ScriptNode.basecost * Mathf.Pow(10, ScriptNode.tier * 2));
+            necessary_favors = (double)(ScriptNode.basecost * Mathf.Pow(10, ScriptNode.tier*1.5f));
         }
 
 
@@ -218,7 +218,8 @@ public class TreeNodeScript : MonoBehaviour
             rb.currentSave.favors = rb.currentSave.favors - necessary_favors;
             ScriptNode.unlocked = true;
             TalentTreeScript.instance.triggervisualchange = true;
-            AutoClickerScript.instance.UpdateACTier();
+            AutoClickerScript.instance.UpdateAutoclickers();
+            rb.UpdateGun();
             rb.UpdateUpgradeTiers();
             rb.ManageFavorsText();
         }

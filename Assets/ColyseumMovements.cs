@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEditor.Rendering;
 using UnityEngine;
@@ -73,34 +74,63 @@ public class ColyseumMovements : MonoBehaviour
 
     private int matchovercounter;
 
+    private int maxhp;
+
+    public bool isfinalBattle;
+
+    public bool waittingforbattlestart;
+
+    public UnityEngine.UI.Image EndBlackScreen;
+
+    public TextMeshProUGUI EndText;
+
+    public UnityEngine.UI.Image TrueEnd;
+
+    public Button endbutton;
+
+    private int endcounter;
+
     private void OnEnable()
     {
         transform.position = new Vector2(-enemystartpos.x,enemystartpos.y);
         matchovercounter = 0;
-        HP = 100;
+
+        maxhp = 100 * (RollBoulder.instance.numberofMoreHealth + 1);
+        HP = maxhp;
         currentclip = maxbulletperclip;
         reloadcounter = 0;
         Victory = false;
         matchover = false;
         allenemies = FindObjectsByType<ColyseumEnemyMovements>(FindObjectsSortMode.None);
-        MatchEndButton.gameObject.SetActive(false);
-        UpdateColTier();
-
-        if(allenemies.Length < currentColyseumtier+1)
+        if(MatchEndButton != null)
         {
-            for(int i = allenemies.Length;i<= currentColyseumtier + 1;i++)
+            MatchEndButton.gameObject.SetActive(false);
+        }
+        
+        UpdateColTier();
+        if(allenemies==null || allenemies.Length ==0 || !allenemies[0].isZeus)
+        {
+            if (allenemies.Length < currentColyseumtier + 1)
             {
-                GameObject newenemy = Instantiate(EnemyPrefab);
-                allenemies.Append(newenemy.GetComponent<ColyseumEnemyMovements>());
+                for (int i = allenemies.Length; i <= currentColyseumtier + 1; i++)
+                {
+                    GameObject newenemy = Instantiate(EnemyPrefab);
+                    allenemies.Append(newenemy.GetComponent<ColyseumEnemyMovements>());
+                }
+            }
+            foreach (ColyseumEnemyMovements enemy in allenemies)
+            {
+                enemy.HP = 100;
+                enemy.currentclip = enemy.maxbulletperclip;
+                enemy.transform.position = enemystartpos + new Vector2(UnityEngine.Random.Range(-1f, 2f), UnityEngine.Random.Range(0, 2f));
             }
         }
-        foreach(ColyseumEnemyMovements enemy in allenemies)
+        else
         {
-            enemy.HP = 100;
-            enemy.currentclip = enemy.maxbulletperclip;
-            enemy.transform.position = enemystartpos + new Vector2(UnityEngine.Random.Range(-1f, 2f), UnityEngine.Random.Range(0, 2f));
+            allenemies[0].HP = 5000;
+            allenemies[0].currentclip = allenemies[0].maxbulletperclip;
+            allenemies[0].transform.position = enemystartpos + new Vector2(UnityEngine.Random.Range(-1f, 2f), UnityEngine.Random.Range(0, 2f));
         }
-
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -172,7 +202,12 @@ public class ColyseumMovements : MonoBehaviour
 
     void FixedUpdate()
     {
+        LifeBar.fillAmount = (float)((float)HP / (float)maxhp);
         CheckIfAllEnemiesdied();
+        if(waittingforbattlestart)
+        {
+            return;
+        }
         if (matchover)
         {
             FinishMatch();
@@ -180,7 +215,7 @@ public class ColyseumMovements : MonoBehaviour
         }
 
 
-        LifeBar.fillAmount = (float)(HP / 100f);
+        
 
         float x = moveInput.x;
 
@@ -301,12 +336,58 @@ public class ColyseumMovements : MonoBehaviour
         {
             if (Input.GetMouseButton(0) && currentclip > 0 && reloadcounter == 0)
             {
-                delaybetweenbulletscnt = (int)(delaybetweenbullets / Time.fixedDeltaTime);
+                delaybetweenbulletscnt = (int)(delaybetweenbullets/ (RollBoulder.instance.numberofBetterGun / 4f + 1f) / Time.fixedDeltaTime);
                 SpawnBullet(direction);
             }
         }
 
         BulletText.text = currentclip+"/"+maxbulletperclip;
+    }
+
+    private void ManageTrueEnd()
+    {
+        if(EndBlackScreen.color.a<1f)
+        {
+            Color oldcolor = EndBlackScreen.color;
+            oldcolor.a += Time.deltaTime/3f;
+            EndBlackScreen.color = oldcolor;
+        }
+        else if(EndText.color.a<1f)
+        {
+            Color oldcolor = EndText.color;
+            oldcolor.a += Time.deltaTime / 3f;
+            EndText.color = oldcolor;
+            if (HP<=0)
+            {
+                oldcolor.a -= Time.deltaTime / 6f;
+                EndText.text = "Sisyphus was beaten by Zeus, but it was not the end.\nHe can improve and beat him.\nHe will reach Olympus again.";
+                if(EndText.color.a >= 1f)
+                {
+                    transform.parent.gameObject.SetActive(false);
+                    RollBoulder.instance.BaseLayer.SetActive(true);
+                }
+            }
+                
+        }
+        else if (TrueEnd.color.a < 1f)
+        {
+            Color oldcolor = TrueEnd.color;
+            oldcolor.a += Time.deltaTime / 5f;
+            TrueEnd.color = oldcolor;
+        }
+        else if(endcounter< 2f/Time.fixedDeltaTime)
+        {
+            endcounter++;
+        }
+        else
+        {
+            endbutton.gameObject.SetActive(true);
+        }
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 
     private void SpawnBullet(Vector2 direction)
@@ -317,7 +398,7 @@ public class ColyseumMovements : MonoBehaviour
 
             if(currentclip==0)
             {
-                reloadcounter = (int)(reloadtime / Time.fixedDeltaTime);
+                reloadcounter = (int)(reloadtime/(RollBoulder.instance.numberofBetterGun/2f+1f) / Time.fixedDeltaTime);
                 lastmaxcounterreloadcounter = reloadcounter;
             }
 
@@ -334,39 +415,52 @@ public class ColyseumMovements : MonoBehaviour
 
     private void FinishMatch()
     {
-        if(!MatchEndButton.gameObject.activeSelf)
+        if(!isfinalBattle)
         {
-            MatchEndButton.gameObject.SetActive(true);
-            TextMeshProUGUI buttontmp = MatchEndButton.GetComponentInChildren<TextMeshProUGUI>();
-            if (Victory)
+            if (!MatchEndButton.gameObject.activeSelf)
             {
-                buttontmp.text = "Victory !\nFavor multiplied by " + currentColyseumtier * 2;
+                MatchEndButton.gameObject.SetActive(true);
+                TextMeshProUGUI buttontmp = MatchEndButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (Victory)
+                {
+                    buttontmp.text = "Victory !\nFavor multiplied by " + currentColyseumtier * 2;
+                }
+                else
+                {
+                    buttontmp.text = "Defeat !\nFavor divided by " + currentColyseumtier * 2;
+                }
+            }
+            else if (matchovercounter < 2.5f / Time.fixedDeltaTime)
+            {
+                matchovercounter++;
             }
             else
             {
-                buttontmp.text = "Defeat !\nFavor divided by " + currentColyseumtier * 2;
+                MatchEndButton.onClick.Invoke();
             }
-        }
-        else if(matchovercounter < 2.5f/Time.fixedDeltaTime)
-        {
-            matchovercounter++;
         }
         else
         {
-            MatchEndButton.onClick.Invoke();
+            ManageTrueEnd();
         }
-        
     }
+
+
 
     public void CloseColyseumButton()
     {
-        if (Victory)
+        distributeColiseumResult(Victory);
+    }
+
+    public void distributeColiseumResult(bool iswinner)
+    {
+        if (iswinner)
         {
-            RollBoulder.instance.currentSave.favors *= currentColyseumtier * 2;
+            RollBoulder.instance.currentSave.favors *= (currentColyseumtier+1f) * 2;
         }
         else
         {
-            RollBoulder.instance.currentSave.favors /= currentColyseumtier * 2;
+            RollBoulder.instance.currentSave.favors /= (currentColyseumtier + 1f) * 2;
         }
     }
 

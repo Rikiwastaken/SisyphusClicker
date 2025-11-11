@@ -8,6 +8,8 @@ public class UIDragMove : MonoBehaviour
 
     public float finalpos;
 
+    public float finalposafterzeus;
+
     private Vector3 Initialpos;
 
     private void Start()
@@ -39,9 +41,13 @@ public class UIDragMove : MonoBehaviour
         {
             transform.position = new Vector3(transform.position.x, Initialpos.y, transform.position.z);
         }
-        if (transform.localPosition.y < finalpos)
+        if (transform.localPosition.y < finalpos && !RollBoulder.instance.currentSave.AlreadyFacedZeus)
         {
             transform.localPosition = new Vector3(transform.localPosition.x, finalpos, transform.localPosition.z);
+        }
+        if (transform.localPosition.y < finalposafterzeus && RollBoulder.instance.currentSave.AlreadyFacedZeus)
+        {
+            transform.localPosition = new Vector3(transform.localPosition.x, finalposafterzeus, transform.localPosition.z);
         }
 
     }

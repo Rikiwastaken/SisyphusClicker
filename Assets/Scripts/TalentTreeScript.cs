@@ -37,6 +37,9 @@ public class TalentTreeScript : MonoBehaviour
     public Sprite FavorDelaysSprite;
     public Sprite AutoFavorsSprite;
     public Sprite RandomEventsSprite;
+    public Sprite BetterGunSprite;
+    public Sprite MoreHealthSprite;
+    public Sprite MoreDefenseSprite;
 
     public GameObject ColiseumButton;
     public void Awake()
@@ -138,8 +141,23 @@ public class TalentTreeScript : MonoBehaviour
                     node.basecost = 50000000000;
                     node.NodeName = "Auto Coliseum";
                     break;
+                case "MDF":
+                    node.picture = MoreDefenseSprite;
+                    node.basecost = 5000000000000;
+                    node.NodeName = "More Def";
+                    break;
+                case "MH":
+                    node.picture = MoreHealthSprite;
+                    node.basecost = 5000000000000;
+                    node.NodeName = "More Health";
+                    break;
+                case "BG":
+                    node.picture = BetterGunSprite;
+                    node.basecost = 5000000000000;
+                    node.NodeName = "Better Gun";
+                    break;
 
-                    
+
             }
         }
 

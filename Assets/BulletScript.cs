@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BulletScript : MonoBehaviour
@@ -12,6 +13,7 @@ public class BulletScript : MonoBehaviour
     public float maxY;
 
     private ColyseumMovements colyseumMovements;
+    private RollBoulder rollBoulder;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -19,7 +21,14 @@ public class BulletScript : MonoBehaviour
         {
             if(collision.GetComponent<ColyseumMovements>() != null && !colyseumMovements.matchover)
             {
-                collision.GetComponent<ColyseumMovements>().HP -= 10;
+                int damage = 10 / (rollBoulder.numberofMoreDef + 1);
+                if (Sender.GetComponent<ColyseumEnemyMovements>() && Sender.GetComponent<ColyseumEnemyMovements>().isZeus)
+                {
+                    damage = 100 / (rollBoulder.numberofMoreDef + 1);
+                }
+                
+
+                collision.GetComponent<ColyseumMovements>().HP -= damage;
                 if(collision.GetComponent<ColyseumMovements>().HP<=0)
                 {
                     colyseumMovements.matchover = true;
@@ -28,6 +37,7 @@ public class BulletScript : MonoBehaviour
             }
             if (collision.GetComponent<ColyseumEnemyMovements>() != null && !colyseumMovements.matchover && Sender.GetComponent<ColyseumEnemyMovements>()==null)
             {
+                int damage = 25 * (rollBoulder.numberofBetterGun + 1);
                 collision.GetComponent<ColyseumEnemyMovements>().HP -= 25;
             }
             Destroy(gameObject);
@@ -48,6 +58,7 @@ public class BulletScript : MonoBehaviour
 
     public void InitializeBullet(GameObject sender, Vector2 direction)
     {
+        rollBoulder = FindAnyObjectByType<RollBoulder>();
         Sender = sender;
         Direction = direction;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;

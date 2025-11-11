@@ -55,9 +55,17 @@ public class ColyseumEnemyMovements : MonoBehaviour
 
     public int jumptrydelaycnt;
 
+    public bool isZeus;
+
+    public bool waittingforbattlestart;
+
     private void OnEnable()
     {
         HP = 100;
+        if(isZeus)
+        {
+            HP = 5000;
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -81,15 +89,25 @@ public class ColyseumEnemyMovements : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         SR = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
-        animator.SetBool("HoldingGun", true);
+        if(!isZeus)
+        {
+            animator.SetBool("HoldingGun", true);
+        }
         GunSR = GunTransform.GetComponentInChildren<SpriteRenderer>();
         Player = FindAnyObjectByType<ColyseumMovements>().gameObject;
     }
 
     void FixedUpdate()
     {
-        LifeBar.fillAmount = (float)(HP / 100f);
-        if (Player.GetComponent<ColyseumMovements>().matchover || HP<=0)
+       
+        float maxhp = 100f;
+        if(isZeus)
+        {
+            maxhp = 5000f;
+        }
+        LifeBar.fillAmount = (float)(HP / maxhp);
+        
+        if (Player.GetComponent<ColyseumMovements>().matchover || HP<=0 || waittingforbattlestart)
         {
             return;
         }

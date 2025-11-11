@@ -50,9 +50,26 @@ public class RollBoulder : MonoBehaviour
         public double favors;
         public double FavorPoints;
         public List<bool> unlockedTree;
+        public bool AlreadyFacedZeus;
     }
 
     public SaveClass currentSave;
+
+    public List<int> MoreHealthUnlocks;
+    public List<int> MoreDefUnlocks;
+    public List<int> BetterGunUnlocks;
+
+    public int numberofMoreHealth;
+    public int numberofMoreDef;
+    public int numberofBetterGun;
+
+    public GameObject BaseLayer;
+    public GameObject ColiseumLayer;
+    public GameObject FinalBattleLayer;
+
+    public UnityEngine.UI.Image FinaleImage;
+
+    public GameObject BaseHUD;
 
     private void Awake()
     {
@@ -69,14 +86,45 @@ public class RollBoulder : MonoBehaviour
         LoadSave();
         targetrotation = Boulder.transform.localRotation.eulerAngles;
         ManageFavorsText();
+        UpdateGun();
+        UpdateUpgradeTiers();
     }
 
     void Update()
     {
         treescript.CheckIfColiseumUnlocked();
-        if (currentSave.meterswalked >Mathf.Pow(10,20))
+        if (currentSave.meterswalked >Mathf.Pow(10,19))
         {
-            reachedheaven = true;
+            if(!BaseLayer.activeSelf)
+            {
+                BaseLayer.SetActive(true);
+            }
+            if(ColiseumLayer.activeSelf)
+            {
+                ColiseumLayer.SetActive(false);
+            }
+            if (BaseHUD.activeSelf)
+            {
+                BaseHUD.SetActive(false);
+            }
+            if (!FinaleImage.gameObject.activeSelf)
+            {
+                FinaleImage.gameObject.SetActive(true);
+            }
+            Color oldcolor = FinaleImage.color;
+            Color newcolor = new Color(oldcolor.r + 0.5f * Time.deltaTime, oldcolor.g + 0.5f * Time.deltaTime, oldcolor.b + 0.5f * Time.deltaTime);
+            FinaleImage.color = newcolor;
+            return;
+        }
+
+        if(FinaleImage.gameObject.activeSelf)
+        {
+            return;
+        }
+
+        if(!BaseHUD.activeSelf)
+        {
+            BaseHUD.SetActive(true);
         }
 
         if (framewhererotate > 0)
@@ -86,13 +134,13 @@ public class RollBoulder : MonoBehaviour
 
             framewhererotate--;
 
-            targetrotation += new Vector3(0, 0, rotationperframe);
+            targetrotation += new Vector3(0, 0, rotationperframe* Time.deltaTime);
 
             framewherewalks = (int)(2f/Time.deltaTime);
 
         }
         
-
+        Debug.Log(targetrotation);
             Boulder.transform.localRotation = Quaternion.Lerp(
                 Boulder.transform.localRotation,
                 Quaternion.Euler(targetrotation),
@@ -121,6 +169,30 @@ public class RollBoulder : MonoBehaviour
         ManageDistanceText();
     }
 
+    public void FightButton()
+    {
+        FinaleImage.gameObject.SetActive(false);
+        BaseLayer.SetActive(false);
+        ColiseumLayer.SetActive(false);
+        FinalBattleLayer.SetActive(true);
+        FinaleImage.color = Color.black;
+        currentSave.favors = 0;
+        currentSave.meterswalked = 0;
+        currentSave.AlreadyFacedZeus = true;
+    }
+
+    public void Submit()
+    {
+        FinaleImage.gameObject.SetActive(false);
+        BaseLayer.SetActive(true);
+        ColiseumLayer.SetActive(false);
+        FinalBattleLayer.SetActive(false);
+        FinaleImage.color = Color.black;
+        currentSave.favors = 0;
+        currentSave.meterswalked = 0;
+        currentSave.AlreadyFacedZeus = true;
+    }
+
     public void ManageDistanceText()
     {
 
@@ -146,24 +218,19 @@ public class RollBoulder : MonoBehaviour
 
     public string CalculateNumberString(double number)
     {
-        double numbertomodify = number;
+        double numberToModify = number;
         string[] suffixes = { "", "k", "M", "G", "T", "P", "E", "Z", "Y", "R", "Q" };
 
         int idx = 0;
-        while (numbertomodify >= 1000.0 && idx < suffixes.Length - 1)
+        while (numberToModify >= 1000.0 && idx < suffixes.Length - 1)
         {
-            numbertomodify /= 1000.0;
+            numberToModify /= 1000.0;
             idx++;
         }
 
-        string numberstr = "";
-        if (idx == 0)
-            numberstr += ((double)numbertomodify).ToString() + " " + suffixes[idx];
-        else
-            numberstr += numbertomodify.ToString("0.###") + " " + suffixes[idx];
-
-        return numberstr;
+        return numberToModify.ToString("0") + " " + suffixes[idx];
     }
+
 
     public void rotateBoulder()
     {
@@ -264,7 +331,8 @@ public class RollBoulder : MonoBehaviour
             }
 
         }
-        AutoClickerScript.instance.UpdateACTier();
+        AutoClickerScript.instance.UpdateAutoclickers();
+        UpdateGun();
         UpdateUpgradeTiers();
     }
 
@@ -336,5 +404,53 @@ public class RollBoulder : MonoBehaviour
         currentSave.currentFavorDelayTier = favorDelayTier;
         currentSave.currentDistanceBonusTier = DistanceTier;
         Save();
+    }
+
+
+
+    public void UpdateGun()
+    {
+        UpdateHealthTier();
+        UpdatedefTier();
+        UpdateGunTier();
+    }
+
+    private void UpdateHealthTier()
+    {
+        numberofMoreHealth = 0;
+        for (int i = 0; i < MoreHealthUnlocks.Count; i++)
+        {
+
+            if (TalentTreeScript.instance != null && TalentTreeScript.instance.allnodes != null && MoreHealthUnlocks != null && MoreHealthUnlocks.Count > i && TalentTreeScript.instance.allnodes.Count > MoreHealthUnlocks[i] && TalentTreeScript.instance.allnodes[MoreHealthUnlocks[i]].unlocked)
+            {
+                numberofMoreHealth ++;
+            }
+        }
+    }
+
+    private void UpdatedefTier()
+    {
+        numberofMoreDef = 0;
+        for (int i = 0; i < MoreDefUnlocks.Count; i++)
+        {
+
+            if (TalentTreeScript.instance != null && TalentTreeScript.instance.allnodes != null && MoreDefUnlocks != null && MoreDefUnlocks.Count > i && TalentTreeScript.instance.allnodes.Count > MoreDefUnlocks[i] && TalentTreeScript.instance.allnodes[MoreDefUnlocks[i]].unlocked)
+            {
+                numberofMoreDef++;
+            }
+        }
+    }
+
+    private void UpdateGunTier()
+    {
+        numberofBetterGun = 0;
+        for (int i = 0; i < BetterGunUnlocks.Count; i++)
+        {
+
+            if (TalentTreeScript.instance != null && TalentTreeScript.instance.allnodes != null && BetterGunUnlocks != null && BetterGunUnlocks.Count > i && TalentTreeScript.instance.allnodes.Count > BetterGunUnlocks[i] && TalentTreeScript.instance.allnodes[BetterGunUnlocks[i]].unlocked)
+            {
+                numberofBetterGun++;
+            }
+        }
     }
 }
