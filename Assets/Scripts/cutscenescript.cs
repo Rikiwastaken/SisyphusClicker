@@ -57,8 +57,16 @@ public class cutscenescript : MonoBehaviour
             Images[currentimageindex].GetComponent<Image>().color = colortoapply;
             if(colortoapply.r<=0f)
             {
-                PressButton();
-                fadingtoblack = false;
+                if(currentimageindex== Images.Count-1)
+                {
+                    SceneManager.LoadScene("MainScene");
+                }
+                else
+                {
+                    PressButton();
+                    fadingtoblack = false;
+                }
+                    
             }
         }
         else

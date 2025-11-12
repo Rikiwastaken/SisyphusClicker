@@ -1073,6 +1073,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7854187843173174702, guid: 51bc80e9be0c39d48ae75492a6320726, type: 3}
+      propertyPath: HP
+      value: 5000
+      objectReference: {fileID: 0}
+    - target: {fileID: 7854187843173174702, guid: 51bc80e9be0c39d48ae75492a6320726, type: 3}
       propertyPath: isZeus
       value: 1
       objectReference: {fileID: 0}
@@ -1098,7 +1102,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7854187843173174702, guid: 51bc80e9be0c39d48ae75492a6320726, type: 3}
       propertyPath: jumptrydelay
-      value: 1.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7854187843173174702, guid: 51bc80e9be0c39d48ae75492a6320726, type: 3}
       propertyPath: maxbulletperclip

@@ -141,7 +141,7 @@ public class RollBoulder : MonoBehaviour
                             FinaleImageText.text = "\"Enough !\"";
                             break;
                         case 8:
-                            FinaleImageText.text = "\"I swear, I will juste lift the curse.\"";
+                            FinaleImageText.text = "\"I swear, I will just lift the curse.\"";
                             break;
                         case 9:
                             FinaleImageText.text = "\"Is this Soulslike ?\"";

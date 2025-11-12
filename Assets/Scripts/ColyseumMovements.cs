@@ -113,7 +113,7 @@ public class ColyseumMovements : MonoBehaviour
         }
         
         UpdateColTier();
-        if(allenemies==null || allenemies.Length ==0 || !allenemies[0].isZeus)
+        if(allenemies==null || allenemies.Length ==0 || !allenemies[0].isZeus || isfinalBattle)
         {
             if (allenemies.Length < currentColyseumtier + 1)
             {
@@ -490,6 +490,7 @@ public class ColyseumMovements : MonoBehaviour
         {
             RollBoulder.instance.currentSave.favors /= (currentColyseumtier + 1f) * 2;
         }
+        RollBoulder.instance.ManageFavorsText();
     }
 
     public void UpdateColTier()
