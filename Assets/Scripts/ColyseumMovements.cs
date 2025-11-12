@@ -456,6 +456,10 @@ public class ColyseumMovements : MonoBehaviour
             }
             else
             {
+                foreach (ColyseumEnemyMovements enemy in FindObjectsByType<ColyseumEnemyMovements>(FindObjectsSortMode.None))
+                {
+                    Destroy(enemy.gameObject);
+                }
                 MatchEndButton.onClick.Invoke();
             }
         }

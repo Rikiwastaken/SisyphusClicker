@@ -99,6 +99,19 @@ public class ColyseumEnemyMovements : MonoBehaviour
 
     void FixedUpdate()
     {
+        if(waittingforbattlestart)
+        {
+            HP = 5000;
+            foreach(ColyseumEnemyMovements enemy in FindObjectsByType<ColyseumEnemyMovements>(FindObjectsSortMode.None))
+            {
+                if(enemy != this)
+                {
+                    Destroy(enemy.gameObject);
+                }
+            }
+            waittingforbattlestart = false;
+        }
+
        if(HP<=0)
         {
             if(!GetComponent<BoxCollider2D>().isTrigger)

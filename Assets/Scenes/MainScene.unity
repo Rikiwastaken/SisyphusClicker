@@ -1114,7 +1114,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7854187843173174702, guid: 51bc80e9be0c39d48ae75492a6320726, type: 3}
       propertyPath: waittingforbattlestart
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7881212294266610314, guid: 51bc80e9be0c39d48ae75492a6320726, type: 3}
       propertyPath: m_Sprite

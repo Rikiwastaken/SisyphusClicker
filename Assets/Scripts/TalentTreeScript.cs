@@ -42,6 +42,9 @@ public class TalentTreeScript : MonoBehaviour
     public Sprite MoreDefenseSprite;
 
     public GameObject ColiseumButton;
+
+    private bool upgradesafterzeusbeaten = true;
+
     public void Awake()
     {
         if (instance == null)
@@ -55,6 +58,12 @@ public class TalentTreeScript : MonoBehaviour
     public void Update()
     {
         
+        if(upgradesafterzeusbeaten &&  RollBoulder.instance.currentSave.ZeusCounter>0)
+        {
+            upgradesafterzeusbeaten = false;
+            transform.localPosition = new Vector3(transform.localPosition.x, -1600, transform.localPosition.z);
+        }
+
         if (triggervisualchange)
         {
             triggervisualchange = false;
