@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -381,6 +382,10 @@ public class ColyseumMovements : MonoBehaviour
                 }
                 
             }
+            else
+            {
+                EndText.text = "And so with Zeus' death Sisyphus was freed from his curse and lived the rest of his days peacefully";
+            }
 
                 
         }
@@ -394,7 +399,7 @@ public class ColyseumMovements : MonoBehaviour
         {
             endcounter++;
         }
-        else
+        else if(endbutton!=null)
         {
             endbutton.gameObject.SetActive(true);
         }

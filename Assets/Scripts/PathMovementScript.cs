@@ -51,11 +51,11 @@ public class PathMovementScript : MonoBehaviour
                     mainpath = path0;
                 }
             }
-            if(TitleTMP.transform.localPosition.x>-3000)
+            if(TitleTMP!=null && TitleTMP.transform.localPosition.x>-3000)
             {
                 TitleTMP.transform.localPosition -= new Vector3(1f, 0.3f, 0f);
             }
-            else
+            else if(TitleTMP != null)
             {
                 Destroy(TitleTMP.gameObject);
             }

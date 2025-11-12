@@ -40,20 +40,31 @@ public class MusicPlayer : MonoBehaviour
 
     public void PlayBossMusic()
     {
-        StopAllCoroutines();
-        StartCoroutine(PlayMusic(introBoss, musicBoss, 9f));
+        if(audiosource.clip!=introBoss &&  audiosource.clip!=musicBoss)
+        {
+            StopAllCoroutines();
+            StartCoroutine(PlayMusic(introBoss, musicBoss, 9f));
+        }
+        
     }
 
     public void PlayEndMusic()
     {
-        audiosource.clip = EndMusic;
-        audiosource.Play();
+        if(audiosource.clip!=EndMusic)
+        {
+            audiosource.clip = EndMusic;
+            audiosource.Play();
+        }
     }
 
     public void PlayMapMusic()
     {
-        StopAllCoroutines();
-        StartCoroutine(PlayMusic(introField, musicField, 13.785f));
+        if (audiosource.clip != introField && audiosource.clip != musicField)
+        {
+            StopAllCoroutines();
+            StartCoroutine(PlayMusic(introField, musicField, 13f));
+        }
+            
     }
     public IEnumerator PlayMusic(AudioClip intro, AudioClip loop, float waitTime)
     {

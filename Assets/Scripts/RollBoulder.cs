@@ -49,7 +49,7 @@ public class RollBoulder : MonoBehaviour
         public double favors;
         public double FavorPoints;
         public List<bool> unlockedTree;
-        public bool AlreadyFacedZeus;
+        public int ZeusCounter;
     }
 
     public SaveClass currentSave;
@@ -67,6 +67,8 @@ public class RollBoulder : MonoBehaviour
     public GameObject FinalBattleLayer;
 
     public UnityEngine.UI.Image FinaleImage;
+    public TextMeshProUGUI FinaleImageText;
+    public UnityEngine.UI.Image TrueEndImage;
 
     public GameObject BaseHUD;
 
@@ -91,7 +93,7 @@ public class RollBoulder : MonoBehaviour
     void Update()
     {
         treescript.CheckIfColiseumUnlocked();
-        if (currentSave.meterswalked >(double)6f*Mathf.Pow(10,18))
+        if (currentSave.meterswalked >(double)Mathf.Pow(10,20))
         {
             if(!BaseLayer.activeSelf)
             {
@@ -113,6 +115,45 @@ public class RollBoulder : MonoBehaviour
             if (!FinaleImage.gameObject.activeSelf)
             {
                 FinaleImage.gameObject.SetActive(true);
+                if(currentSave.ZeusCounter > 0)
+                {
+                    switch(currentSave.ZeusCounter)
+                    {
+                        case 1:
+                            FinaleImageText.text = "\"Hold on, you Again ?\"";
+                            break;
+                        case 2:
+                            FinaleImageText.text = "\"You came all the way to get humiliated.\"";
+                            break;
+                        case 3:
+                            FinaleImageText.text = "\"Don't you have anything better to do ?\"";
+                            break;
+                        case 4:
+                            FinaleImageText.text = "\"This is embarassing.\"";
+                            break;
+                        case 5:
+                            FinaleImageText.text = "\"Give me a break man...\"";
+                            break;
+                        case 6:
+                            FinaleImageText.text = "\"You know what ? I'll just kill myself.\"";
+                            break;
+                        case 7:
+                            FinaleImageText.text = "\"Enough !\"";
+                            break;
+                        case 8:
+                            FinaleImageText.text = "\"I swear, I will juste lift the curse.\"";
+                            break;
+                        case 9:
+                            FinaleImageText.text = "\"Is this Soulslike ?\"";
+                            break;
+                        case 10:
+                            FinaleImageText.text = "\"I'm not talking anymore.\"";
+                            break;
+                        default:
+                            FinaleImageText.text = "\"...\"";
+                            break;
+                    }
+                }
             }
             Color oldcolor = FinaleImage.color;
             Color newcolor = new Color(oldcolor.r + 0.5f * Time.deltaTime, oldcolor.g + 0.5f * Time.deltaTime, oldcolor.b + 0.5f * Time.deltaTime);
@@ -180,7 +221,7 @@ public class RollBoulder : MonoBehaviour
         FinaleImage.color = Color.black;
         currentSave.favors = 0;
         currentSave.meterswalked = 0;
-        currentSave.AlreadyFacedZeus = true;
+        currentSave.ZeusCounter ++;
         FinalBattleMovement.Setup();
     }
 
@@ -193,7 +234,7 @@ public class RollBoulder : MonoBehaviour
         FinaleImage.color = Color.black;
         currentSave.favors = 0;
         currentSave.meterswalked = 0;
-        currentSave.AlreadyFacedZeus = true;
+        currentSave.ZeusCounter++;
         MusicPlayer.instance.PlayMapMusic();
     }
 
@@ -232,24 +273,38 @@ public class RollBoulder : MonoBehaviour
             idx++;
         }
 
+        if(numberToModify >= 1000.0)
+        {
+            numberToModify = double.PositiveInfinity;
+        }
+
         return numberToModify.ToString("0") + " " + suffixes[idx];
     }
 
 
     public void rotateBoulder()
     {
-
-        double rotationbonus = 1;
-        if (currentSave.currentDistanceBonusTier > 0)
+        if(!FinalBattleLayer.activeSelf)
         {
-            rotationbonus += (double)Mathf.Pow(10, currentSave.currentDistanceBonusTier * 1.5f);
+            double rotationbonus = 1;
+            if (currentSave.currentDistanceBonusTier > 0)
+            {
+                rotationbonus += (double)Mathf.Pow(10, currentSave.currentDistanceBonusTier * 1.5f);
+            }
+
+            framewhererotate = (int)(0.5f / Time.fixedDeltaTime);
+
+            currentSave.meterswalked += rotationbonus;
+
+            GainFavor();
         }
 
-        framewhererotate = (int)(0.5f/Time.fixedDeltaTime);
+        if(TrueEndImage.gameObject.activeSelf && TrueEndImage.color.a>=1f)
+        {
+            Application.Quit();
+            Debug.Log("quitting");
+        }
         
-        currentSave.meterswalked += rotationbonus;
-
-        GainFavor();
     }
 
     public void GainFavor()

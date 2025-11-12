@@ -28,22 +28,22 @@ public class UIDragMove : MonoBehaviour
     {
         if(Input.GetAxis("Mouse ScrollWheel")>0)
         {
-            transform.position += new Vector3(0f,speedperframe, 0f) / Time.deltaTime;
+            transform.position -= new Vector3(0f,speedperframe, 0f) / Time.deltaTime;
         }
         else if (Input.GetAxis("Mouse ScrollWheel") < 0)
         {
-            transform.position -= new Vector3(0f, speedperframe, 0f) / Time.deltaTime;
+            transform.position += new Vector3(0f, speedperframe, 0f) / Time.deltaTime;
         }
 
         if(transform.position.y > Initialpos.y)
         {
             transform.position = new Vector3(transform.position.x, Initialpos.y, transform.position.z);
         }
-        if (transform.localPosition.y < finalpos && !RollBoulder.instance.currentSave.AlreadyFacedZeus)
+        if (transform.localPosition.y < finalpos && RollBoulder.instance.currentSave.ZeusCounter==0)
         {
             transform.localPosition = new Vector3(transform.localPosition.x, finalpos, transform.localPosition.z);
         }
-        if (transform.localPosition.y < finalposafterzeus && RollBoulder.instance.currentSave.AlreadyFacedZeus)
+        if (transform.localPosition.y < finalposafterzeus && RollBoulder.instance.currentSave.ZeusCounter>0)
         {
             transform.localPosition = new Vector3(transform.localPosition.x, finalposafterzeus, transform.localPosition.z);
         }
