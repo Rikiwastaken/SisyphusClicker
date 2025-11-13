@@ -174,7 +174,7 @@ public class ColyseumMovements : MonoBehaviour
     private void CheckIfAllEnemiesdied()
     {
         bool alldead = true;
-        foreach(ColyseumEnemyMovements enemy  in allenemies)
+        foreach(ColyseumEnemyMovements enemy  in FindObjectsByType<ColyseumEnemyMovements>(FindObjectsSortMode.None))
         {
             if(enemy.HP > 0)
             {
